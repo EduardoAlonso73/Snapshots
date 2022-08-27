@@ -1,53 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <ImageButton
         android:id="@+id/btnDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:src="@drawable/ic_delete"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/common_padding_default"
         android:layout_marginEnd="@dimen/common_padding_default"
-        android:contentDescription="TODO" />
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="TODO"
+        android:layout_marginBottom="@dimen/common_padding_middle"
+        android:src="@drawable/ic_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvTitle" />
+
+
     <TextView
         android:id="@+id/tvTitle"
-        app:layout_constraintTop_toTopOf="@+id/btnDelete"
         android:layout_width="0dp"
-        app:layout_constraintEnd_toStartOf="@+id/btnDelete"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/btnDelete"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/common_padding_default"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
-        android:layout_height="wrap_content"
-        tools:text="Show text main title"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnDelete"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/common_padding_default"
 
+        app:layout_constraintTop_toBottomOf="@+id/imgPhote"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="Show text main title" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/cbLike"
+        android:layout_marginEnd="@dimen/common_padding_min"
+        android:layout_marginTop="@dimen/common_padding_min"
         android:button="@drawable/ic_like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/common_padding_default"
         android:layout_marginBottom="@dimen/common_padding_default"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:elevation="5dp"
+        android:background="@drawable/shape_oval"
+        app:layout_constraintTop_toTopOf="@+id/imgPhote"
+        app:layout_constraintEnd_toEndOf="@+id/imgPhote"
+        />
+
     <ImageView
         android:id="@+id/imgPhote"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/common_padding_min"
+        android:contentDescription="TODO"
+        android:elevation="1dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_launcher"
         app:layout_constraintDimensionRatio="H, 4:3"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnDelete"
-        app:layout_constraintBottom_toTopOf="@id/cbLike"
-        android:contentDescription="TODO" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
