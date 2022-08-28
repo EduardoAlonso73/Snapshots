@@ -19,18 +19,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvTitle" />
 
-
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="0dp"
+        android:textSize="16sp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/common_padding_default"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnDelete"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="@dimen/common_padding_default"
-
         app:layout_constraintTop_toBottomOf="@+id/imgPhote"
         app:layout_constraintVertical_bias="0.0"
         tools:text="Show text main title" />
@@ -39,7 +38,7 @@
         android:id="@+id/cbLike"
         android:layout_marginEnd="@dimen/common_padding_min"
         android:layout_marginTop="@dimen/common_padding_min"
-        android:button="@drawable/ic_like"
+        android:button="@drawable/status_favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/common_padding_default"
@@ -47,8 +46,7 @@
         android:elevation="5dp"
         android:background="@drawable/shape_oval"
         app:layout_constraintTop_toTopOf="@+id/imgPhote"
-        app:layout_constraintEnd_toEndOf="@+id/imgPhote"
-        />
+        app:layout_constraintEnd_toEndOf="@+id/imgPhote" />
 
     <ImageView
         android:id="@+id/imgPhote"
