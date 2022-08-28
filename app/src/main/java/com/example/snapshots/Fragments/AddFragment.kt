@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,11 +12,22 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.snapshots.R
 import com.example.snapshots.databinding.FragmentAddBinding
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+
 
 class AddFragment : Fragment() {
-    private lateinit var  mBinding: FragmentAddBinding
-    private   var mPhoneSelectUrl:Uri?=null
     private val RC_GALLERY=12
+    private val PATH_SHAPSHOT= "snapshots"  // the name folde in the server
+
+    private lateinit var  mBinding: FragmentAddBinding
+    private lateinit var  mStorageReference: StorageReference
+    private lateinit var mDatabaseReference: DatabaseReference
+    private   var mPhoneSelectUrl:Uri?=null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -34,6 +44,8 @@ class AddFragment : Fragment() {
             btnPost.setOnClickListener { postSnapshot() }
             btnSelect.setOnClickListener { openGallery() }
         }
+        mStorageReference=FirebaseStorage.getInstance().reference
+        mDatabaseReference=FirebaseDatabase.getInstance().reference.child(PATH_SHAPSHOT)
 
     }
 
@@ -56,8 +68,16 @@ class AddFragment : Fragment() {
        }
    }
 
+    private fun postSnapshot() {
 
-/*    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    }
+
+    private fun saveSnapshots(){
+
+    }
+
+
+    /*    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode==Activity.RESULT_OK){
             if(requestCode==RC_GALLERY){
@@ -72,11 +92,6 @@ class AddFragment : Fragment() {
             }
         }
     }*/
-
-
-    private fun postSnapshot() {
-
-    }
 
 
 }
