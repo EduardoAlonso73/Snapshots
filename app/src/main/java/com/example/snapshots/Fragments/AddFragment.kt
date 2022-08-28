@@ -52,45 +52,56 @@ class AddFragment : Fragment() {
     }
 
     private fun openGallery() {
-     val intent=Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val intent=Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         getResult.launch(intent)
     }
 
-   private  val  getResult=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-       if (it.resultCode==Activity.RESULT_OK){
-               mPhoneSelectUrl=it.data?.data
-               with(mBinding){
-                   imgPhoto.setImageURI(mPhoneSelectUrl)
-                   tilTitle.visibility=View.VISIBLE
-                   println(" ================= $mPhoneSelectUrl====================")
-                   tvMessage.text=getString(R.string.post_message_valid_title)
-               }
+    private  val  getResult=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        if (it.resultCode==Activity.RESULT_OK){
+            mPhoneSelectUrl=it.data?.data
+            with(mBinding){
+                imgPhoto.setImageURI(mPhoneSelectUrl)
+                tilTitle.visibility=View.VISIBLE
+                println(" ================= $mPhoneSelectUrl====================")
+                tvMessage.text=getString(R.string.post_message_valid_title)
+            }
 
 
-       }
-   }
+        }
+    }
 
     private fun postSnapshot() {
         mBinding.prograssBar.visibility=View.VISIBLE
-       val storageReference= mStorageReference.child(PATH_SHAPSHOT).child("my_phote")
+        val key=mDatabaseReference.push().key!!  // Create new  nodo   as well as extract its key
+        val storageReference= mStorageReference.child(PATH_SHAPSHOT).child("my_phote")
         if(mPhoneSelectUrl!=null) {
             storageReference.putFile(mPhoneSelectUrl!!).addOnProgressListener {
                 val process =(100* it.bytesTransferred/it.totalByteCount).toDouble()
                 mBinding.prograssBar.progress=process.toInt()
                 mBinding.tvMessage.text="$process"
             }
-                .addOnCompleteListener{
-                    mBinding.prograssBar.visibility=View.INVISIBLE
+                // -- -=-=-=-=-=-=-=- Complente  =-=-=-=-=-=-=-=-= -- //
+                .addOnCompleteListener{mBinding.prograssBar.visibility=View.INVISIBLE}
+
+                // -- -=-=-=-=-=-=-=- Succeess  =-=-=-=-=-=-=-=-= -- //
+                .addOnSuccessListener {
+                    Snackbar.make(mBinding.root,"Publicada",Snackbar.LENGTH_SHORT).show()
+                    it.storage.downloadUrl.addOnSuccessListener {
+                        saveSnapshots(key,it.toString(),mBinding.etTitle.text.toString().trim())
+                        mBinding.tilTitle.visibility=View.GONE
+                        mBinding.tvMessage.text=getString(R.string.post_message_title)
+                    }
                 }
-                .addOnSuccessListener { Snackbar.make(mBinding.root,"Publicada",Snackbar.LENGTH_SHORT).show() }
+                // -- -=-=-=-=-=-=-=- Failt or Error  =-=-=-=-=-=-=-=-= -- //
                 .addOnFailureListener{ Snackbar.make(mBinding.root,"No be can push",Snackbar.LENGTH_SHORT).show()}
         }
 
 
     }
 
-    private fun saveSnapshots(){
-
+    private fun saveSnapshots(key:String,url:String,title:String){
+        val snapshot=Snapshot(title =title, photoUrl = url )
+        mDatabaseReference.child(key).setValue(snapshot)
     }
 
 
