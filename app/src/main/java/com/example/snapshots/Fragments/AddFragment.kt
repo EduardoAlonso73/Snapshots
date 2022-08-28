@@ -11,7 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.snapshots.R
+import com.example.snapshots.Snapshot
 import com.example.snapshots.databinding.FragmentAddBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -69,6 +71,21 @@ class AddFragment : Fragment() {
    }
 
     private fun postSnapshot() {
+        mBinding.prograssBar.visibility=View.VISIBLE
+       val storageReference= mStorageReference.child(PATH_SHAPSHOT).child("my_phote")
+        if(mPhoneSelectUrl!=null) {
+            storageReference.putFile(mPhoneSelectUrl!!).addOnProgressListener {
+                val process =(100* it.bytesTransferred/it.totalByteCount).toDouble()
+                mBinding.prograssBar.progress=process.toInt()
+                mBinding.tvMessage.text="$process"
+            }
+                .addOnCompleteListener{
+                    mBinding.prograssBar.visibility=View.INVISIBLE
+                }
+                .addOnSuccessListener { Snackbar.make(mBinding.root,"Publicada",Snackbar.LENGTH_SHORT).show() }
+                .addOnFailureListener{ Snackbar.make(mBinding.root,"No be can push",Snackbar.LENGTH_SHORT).show()}
+        }
+
 
     }
 
