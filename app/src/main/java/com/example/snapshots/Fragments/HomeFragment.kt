@@ -59,6 +59,9 @@ class HomeFragment : Fragment() {
                         .load(snapshot.photoUrl)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .centerCrop()
+                        .dontAnimate()
+                        .dontTransform()
+                        .placeholder(R.drawable.loading_spinner)
                         .into(binding.imgPhote)
                 }
             }

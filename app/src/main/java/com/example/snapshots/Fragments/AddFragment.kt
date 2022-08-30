@@ -82,7 +82,6 @@ class AddFragment : Fragment() {
             }
                 // -- -=-=-=-=-=-=-=- Complente  =-=-=-=-=-=-=-=-= -- //
                 .addOnCompleteListener{mBinding.prograssBar.visibility=View.INVISIBLE}
-
                 // -- -=-=-=-=-=-=-=- Succeess  =-=-=-=-=-=-=-=-= -- //
                 .addOnSuccessListener {
                     Snackbar.make(mBinding.root,"Publicada",Snackbar.LENGTH_SHORT).show()
