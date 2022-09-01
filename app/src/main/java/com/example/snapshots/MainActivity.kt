@@ -1,9 +1,10 @@
 package com.example.snapshots
 
-import android.content.Intent
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.snapshots.Fragments.AddFragment
@@ -22,8 +23,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mActivityFragment:Fragment
     private  lateinit var  mFragmentManager: FragmentManager
 
-    private lateinit var mAuthiListener:FirebaseAuth.AuthStateListener
+    private lateinit var mAuthListener:FirebaseAuth.AuthStateListener
     private var mFirebaseAuth:FirebaseAuth?=null
+
+    private val responseAuthUI=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ actResult->
+        if(actResult.resultCode== RESULT_OK){
+            Toast.makeText(this,"Welcome ....",Toast.LENGTH_SHORT).show()
+        }else{
+            if(IdpResponse.fromResultIntent(actResult.data)==null){ // Botton Back press
+                finish()
+            }
+
+        }
+
+    }
 
 
 
@@ -39,13 +52,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupAuth() {
         mFirebaseAuth= FirebaseAuth.getInstance()
-        mAuthiListener=FirebaseAuth.AuthStateListener {
+        mAuthListener=FirebaseAuth.AuthStateListener {
             val user =it.currentUser
             if(user==null){
+
                 val authUI= AuthUI.getInstance().createSignInIntentBuilder()
-                    .setAvailableProviders(Arrays.asList(AuthUI.IdpConfig.EmailBuilder().build(),
-                        AuthUI.IdpConfig.GoogleBuilder().build())).build()
-                    startActivityForResult(authUI,RC_SING_IN)
+                    .setAvailableProviders(
+                        Arrays.asList(
+                            AuthUI.IdpConfig.EmailBuilder().build(),
+                            AuthUI.IdpConfig.GoogleBuilder().build()
+                        )
+                    ).build()
+                responseAuthUI.launch(authUI)
             }
         }
     }
@@ -82,25 +100,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        mFirebaseAuth?.addAuthStateListener(mAuthiListener)
+        mFirebaseAuth?.addAuthStateListener(mAuthListener)
     }
 
     override fun onPause() {
         super.onPause()
-        mFirebaseAuth?.removeAuthStateListener(mAuthiListener)
+        mFirebaseAuth?.removeAuthStateListener(mAuthListener)
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode==RC_SING_IN){
-            if(resultCode== RESULT_OK){
-                Toast.makeText(this,"Welcome ....",Toast.LENGTH_SHORT).show()
-            }else{
-                if(IdpResponse.fromResultIntent(data)==null){ // Botton Back press
-                    finish()
-                }
-            }
-        }
-    }
+    /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+         super.onActivityResult(requestCode, resultCode, data)
+         if(requestCode==RC_SING_IN){
+             if(resultCode== RESULT_OK){
+                 Toast.makeText(this,"Welcome ....",Toast.LENGTH_SHORT).show()
+             }else{
+                 if(IdpResponse.fromResultIntent(data)==null){ // Botton Back press
+                     finish()
+                 }
+             }
+         }
+     }*/
 }
