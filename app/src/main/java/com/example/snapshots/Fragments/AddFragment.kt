@@ -14,6 +14,7 @@ import com.example.snapshots.R
 import com.example.snapshots.Snapshot
 import com.example.snapshots.databinding.FragmentAddBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -73,7 +74,7 @@ class AddFragment : Fragment() {
     private fun postSnapshot() {
         mBinding.prograssBar.visibility=View.VISIBLE
         val key=mDatabaseReference.push().key!!  // Create new  nodo   as well as extract its key
-        val storageReference= mStorageReference.child(PATH_SHAPSHOT).child("my_phote")
+        val storageReference= mStorageReference.child(PATH_SHAPSHOT).child(FirebaseAuth.getInstance().currentUser!!.uid).child(key)
         if(mPhoneSelectUrl!=null) {
             storageReference.putFile(mPhoneSelectUrl!!).addOnProgressListener {
                 val process =(100* it.bytesTransferred/it.totalByteCount).toDouble()
