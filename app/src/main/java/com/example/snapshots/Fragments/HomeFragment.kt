@@ -18,6 +18,7 @@ import com.example.snapshots.databinding.FragmentHomeBinding
 import com.example.snapshots.databinding.ItemSnapshotBinding
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.firebase.ui.database.SnapshotParser
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 
@@ -37,12 +38,18 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val query=FirebaseDatabase.getInstance().reference.child("snapshots")
-        val options=FirebaseRecyclerOptions.Builder<Snapshot>().setQuery(query,Snapshot::class.java).build()
+        val options=FirebaseRecyclerOptions.Builder<Snapshot>().setQuery(query, SnapshotParser {
+            val snapshot=it.getValue(Snapshot::class.java)
+            snapshot!!.id=it.key!!
+            snapshot
+        }).build()
+
+        //FirebaseRecyclerOptions.Builder<Snapshot>().setQuery(query,Snapshot::class.java).build()
+
+
 
         mFirebaseAdapter=object : FirebaseRecyclerAdapter<Snapshot,SnapshotHolder>(options){
             private  lateinit var  mContext:Context
-
-
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SnapshotHolder {
                 mContext=parent.context
 
@@ -54,7 +61,7 @@ class HomeFragment : Fragment() {
                 val snapshot=getItem(position)
                 with(holder){
                     setListener(snapshot)
-                    binding.tvTitle.text=snapshot.title
+                    mBinding.tvTitle.text=snapshot.title
                     Glide.with(mContext)
                         .load(snapshot.photoUrl)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -62,7 +69,7 @@ class HomeFragment : Fragment() {
                         .dontAnimate()
                         .dontTransform()
                         .placeholder(R.drawable.loading_spinner)
-                        .into(binding.imgPhote)
+                        .into(mBinding.imgPhote)
                 }
             }
 
@@ -79,7 +86,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-      setupRecyclerView()
+        setupRecyclerView()
 
     }
 
@@ -103,15 +110,24 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun deleteSnapshot(snapshot:Snapshot ){
+        val databaseReference=FirebaseDatabase.getInstance().reference.child("snapshots")
+        databaseReference.child(snapshot.id).removeValue()
+        println(" ============================== ${snapshot.id} =================================")
+    }
+
 
 /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
       ----------- INNER CLASS ------------
  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* */
 
     inner class SnapshotHolder(view: View):RecyclerView.ViewHolder(view){
-        val binding=ItemSnapshotBinding.bind(view)
+        val mBinding=ItemSnapshotBinding.bind(view)
 
         fun setListener(snapshot: Snapshot){
+            with(mBinding){
+                btnDelete.setOnClickListener { deleteSnapshot(snapshot) }
+            }
 
         }
     }
