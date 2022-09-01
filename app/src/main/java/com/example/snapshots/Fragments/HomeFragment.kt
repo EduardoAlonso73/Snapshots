@@ -19,6 +19,7 @@ import com.example.snapshots.databinding.ItemSnapshotBinding
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.firebase.ui.database.SnapshotParser
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 
@@ -62,6 +63,11 @@ class HomeFragment : Fragment() {
                 with(holder){
                     setListener(snapshot)
                     mBinding.tvTitle.text=snapshot.title
+                   mBinding.cbLike.text=snapshot.likeList.keys.size.toString()
+                    FirebaseAuth.getInstance().currentUser?.let {
+                        mBinding.cbLike.isChecked=snapshot.likeList.containsKey(it.uid)
+                    }
+
                     Glide.with(mContext)
                         .load(snapshot.photoUrl)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -116,6 +122,18 @@ class HomeFragment : Fragment() {
         println(" ============================== ${snapshot.id} =================================")
     }
 
+    private fun setLike(snapshot: Snapshot,checked:Boolean){
+        val databaseReference=FirebaseDatabase.getInstance().reference.child("snapshots")
+        if(checked){
+          databaseReference.child(snapshot.id).child("likeList")
+              .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(checked)
+        }else
+        {
+            databaseReference.child(snapshot.id).child("likeList")
+                .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(null)
+        }
+    }
+
 
 /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
       ----------- INNER CLASS ------------
@@ -127,6 +145,7 @@ class HomeFragment : Fragment() {
         fun setListener(snapshot: Snapshot){
             with(mBinding){
                 btnDelete.setOnClickListener { deleteSnapshot(snapshot) }
+                cbLike.setOnCheckedChangeListener { _, checked -> setLike(snapshot,checked)}
             }
 
         }
