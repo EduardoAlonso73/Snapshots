@@ -14,15 +14,15 @@ import com.example.snapshots.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import java.util.*
+import java.lang.Exception
+
 
 class MainActivity : AppCompatActivity() {
-    private val RC_SING_IN =21
+
 
     private lateinit var mBinding: ActivityMainBinding
     private lateinit var mActivityFragment:Fragment
-    private  lateinit var  mFragmentManager: FragmentManager
-
+    private   var  mFragmentManager: FragmentManager?=null
     private lateinit var mAuthListener:FirebaseAuth.AuthStateListener
     private var mFirebaseAuth:FirebaseAuth?=null
 
@@ -33,9 +33,7 @@ class MainActivity : AppCompatActivity() {
             if(IdpResponse.fromResultIntent(actResult.data)==null){ // Botton Back press
                 finish()
             }
-
         }
-
     }
 
 
@@ -47,35 +45,59 @@ class MainActivity : AppCompatActivity() {
 
         setupAuth()
 
-        initBottomNav()
+        //initBottomNav()
     }
 
     private fun setupAuth() {
         mFirebaseAuth= FirebaseAuth.getInstance()
-        mAuthListener=FirebaseAuth.AuthStateListener {
+        mAuthListener=FirebaseAuth.AuthStateListener { it ->
             val user =it.currentUser
-            if(user==null){
 
-                val authUI= AuthUI.getInstance().createSignInIntentBuilder()
-                    .setAvailableProviders(
-                        Arrays.asList(
-                            AuthUI.IdpConfig.EmailBuilder().build(),
-                            AuthUI.IdpConfig.GoogleBuilder().build()
-                        )
-                    ).build()
-                responseAuthUI.launch(authUI)
-            }
+              if(user==null){
+                  Toast.makeText(this,"No login",Toast.LENGTH_SHORT).show()
+                  val authUI= AuthUI.getInstance()
+                      .createSignInIntentBuilder()
+                      .setIsSmartLockEnabled(false)
+                      .setAvailableProviders(
+                          listOf(
+                              AuthUI.IdpConfig.EmailBuilder().build(),
+                              AuthUI.IdpConfig.GoogleBuilder().build()
+                          )
+                      ).build()
+                  responseAuthUI.launch(authUI)
+              }else{
+                  it.currentUser?.let {currentUser -> SnapshotsApplication.currentUser = currentUser }
+                  //SnapshotsApplication.currentUser = it.currentUser!!
+                  Toast.makeText(this,"O_<",Toast.LENGTH_SHORT).show()
+                  val fragmentProfile = mFragmentManager?.findFragmentByTag(ProfileFragment::class.java.name)
+                  fragmentProfile?.let {
+                      (it as FragmentAux).refresh()
+                  }
+                  if (mFragmentManager == null) {
+                      mFragmentManager = supportFragmentManager
+                      initBottomNav(mFragmentManager!!)
+                  }
+
+              }
+
         }
     }
 
-    private fun initBottomNav() {
-        val mFragmentManager=supportFragmentManager
+    private fun initBottomNav(fragmentManager: FragmentManager) {
+
+        mFragmentManager?.let {
+            for (fragment in it.fragments) {
+                it.beginTransaction().remove(fragment!!).commit()
+                Toast.makeText(this,"Transaction",Toast.LENGTH_SHORT).show()
+            }
+        }
+
         val homeFragment=HomeFragment()
         val addFragment=AddFragment()
         val profileFragment=ProfileFragment()
 
         mActivityFragment=homeFragment
-        with(mFragmentManager){
+        with(fragmentManager){
             beginTransaction().add(R.id.hostFragments,profileFragment,ProfileFragment::class.java.name).hide(profileFragment).commit()
             beginTransaction().add(R.id.hostFragments,addFragment,AddFragment::class.java.name).hide(addFragment).commit()
             beginTransaction().add(R.id.hostFragments,homeFragment,HomeFragment::class.java.name).commit()
@@ -89,6 +111,12 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+        mBinding.bottomNav.setOnItemReselectedListener{
+            when(it.itemId){
+                R.id.action_home->(homeFragment  as HomeAux).goToTop()
+            }
+        }
+
     }
 
     private fun optionShowFragment(nameFragment: Fragment):Boolean {
