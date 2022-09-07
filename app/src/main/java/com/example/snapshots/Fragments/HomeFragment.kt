@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 
 
 class HomeFragment : Fragment() , HomeAux{
@@ -55,6 +56,7 @@ class HomeFragment : Fragment() , HomeAux{
     }
 
     private fun setupFirebaseInstance(){
+        // it is the location of our model Data  called --snapshots--  in Realtime Firebase
         mSnapshotsRef=FirebaseDatabase.getInstance().reference.child(SnapshotsApplication.PATH_SNAPSHOTS)
     }
     private fun  setupAdapter(){
@@ -95,8 +97,8 @@ class HomeFragment : Fragment() , HomeAux{
                         .into(mBinding.imgPhote)
                 }
             }
-
-            @SuppressLint("NotifyDataSetChanged")//Error interno Firebase ui 8.0.0
+            //Error interno Firebase ui 8.0.0
+            @SuppressLint("NotifyDataSetChanged")
             override fun onDataChanged() {
                 super.onDataChanged()
                 mBinding.progressBar.visibility=View.GONE
@@ -134,21 +136,27 @@ class HomeFragment : Fragment() , HomeAux{
     }
 
     private fun deleteSnapshot(snapshot:Snapshot ){
+        //We get the name image in the Storage
         val databaseReference= FirebaseStorage.getInstance().reference
             .child(SnapshotsApplication.PATH_SNAPSHOTS)
             .child(SnapshotsApplication.currentUser.uid)
             .child(snapshot.id)
-        databaseReference.delete().addOnCompleteListener { result ->
-            if (result.isSuccessful){
-                mSnapshotsRef.child(snapshot.id).removeValue()
-            } else {
-                Toast.makeText(context," Snasphots deleted !!",Toast.LENGTH_SHORT).show()
+
+        if ( StorageException.ERROR_OBJECT_NOT_FOUND==SnapshotsApplication.CODE_VALUE_EXP){
+            mSnapshotsRef.child(snapshot.id).removeValue()
+        }else{
+            databaseReference.delete().addOnCompleteListener { result ->
+                if (result.isSuccessful ) {
+                    mSnapshotsRef.child(snapshot.id).removeValue()
+                } else {
+                    Toast.makeText(context, " Snapshots not was deleted !!", Toast.LENGTH_SHORT).show()
+                }
             }
+
         }
 
-
         //databaseReference.child(snapshot.id).removeValue()
-        println(" ============================== ${snapshot.id} =================================")
+        //println(" ============000000000================== ${snapshot.id} =================000000000================")
     }
 
     private fun setLike(snapshot: Snapshot,checked:Boolean){
@@ -159,7 +167,7 @@ class HomeFragment : Fragment() , HomeAux{
             //.child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(checked)
         }else
         {
-            databaseReference.child(snapshot.id).child("likeList")
+            databaseReference.child(snapshot.id).child(SnapshotsApplication.PROPERTY_LIKE_LIST)
                 .child(SnapshotsApplication.currentUser.uid).setValue(null)
             //    .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(null)
         }
