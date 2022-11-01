@@ -19,6 +19,7 @@
         style="?android:progressBarStyleHorizontal"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnPost"
+        android:enabled="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/common_padding_min"
@@ -40,6 +41,26 @@
         app:layout_constraintTop_toTopOf="@id/btnPost" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilImgUrl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        android:hint="Url Imagen"
+        android:layout_marginHorizontal="@dimen/common_padding_min"
+        android:layout_marginTop="@dimen/common_padding_min"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/btnPost">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etImgUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -50,7 +71,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/btnPost">
+        app:layout_constraintTop_toBottomOf="@id/tilImgUrl">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etTitle"
             android:layout_width="match_parent"
@@ -62,6 +83,7 @@
         android:id="@+id/imgPhoto"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#EEEEEE"
         android:layout_marginTop="@dimen/common_padding_min"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"

@@ -13,6 +13,7 @@ import com.example.snapshots.Fragments.ProfileFragment
 import com.example.snapshots.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import java.lang.Exception
 
@@ -44,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(mBinding.root)
 
         setupAuth()
-
         //initBottomNav()
     }
 
@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
                   val authUI= AuthUI.getInstance()
                       .createSignInIntentBuilder()
                       .setIsSmartLockEnabled(false)
+                      .setLogo(R.drawable.ic_icon)
                       .setAvailableProviders(
                           listOf(
                               AuthUI.IdpConfig.EmailBuilder().build(),
